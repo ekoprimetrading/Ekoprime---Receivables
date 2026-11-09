@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026 Receivables</title>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f7;--surface:#fff;--ink:#14212b;--muted:#5c6b77;--line:#dde3e8;--accent:#0b5d6b;--accent-ink:#fff;--paid:#1b7a4b;--paid-bg:#e0f3e8;--due:#8a5a00;--due-bg:#fdf0d2;--over:#b3261e;--over-bg:#fde4e1;--open-bg:#e4edf2;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e161c;--surface:#16222b;--ink:#e8eef2;--muted:#93a3af;--line:#2a3a46;--accent:#4fb3c4;--accent-ink:#06222a;--paid:#6fd4a0;--paid-bg:#17382a;--due:#f0c36a;--due-bg:#3a2f12;--over:#ff8d85;--over-bg:#4a1f1c;--open-bg:#1f3340}}
+:root[data-theme="dark"]{--bg:#0e161c;--surface:#16222b;--ink:#e8eef2;--muted:#93a3af;--line:#2a3a46;--accent:#4fb3c4;--accent-ink:#06222a;--paid:#6fd4a0;--paid-bg:#17382a;--due:#f0c36a;--due-bg:#3a2f12;--over:#ff8d85;--over-bg:#4a1f1c;--open-bg:#1f3340}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:26px;margin:0;letter-spacing:-.02em}
+h2{font-size:16px;margin:0 0 10px}
+.sub{color:var(--muted);font-size:13px}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:500}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.sm{padding:4px 10px;font-size:13px}
+.btn.danger{color:var(--over)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.stat b{display:block;font-size:24px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:13px}
+.stat.over b{color:var(--over)}.stat.due b{color:var(--due)}.stat.paid b{color:var(--paid)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.aging{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line);margin:8px 0 10px}
+.aging i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--muted)}
+.legend em{font-style:normal;display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.tools input,.tools select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.tools input{flex:1;min-width:160px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th{text-align:left;font-size:13px;color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.s-open{background:var(--open-bg);color:var(--accent)}.s-due{background:var(--due-bg);color:var(--due)}.s-over{background:var(--over-bg);color:var(--over)}.s-paid{background:var(--paid-bg);color:var(--paid)}
+.acts{display:flex;gap:6px;justify-content:flex-end}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:20px;width:min(440px,calc(100vw - 24px))}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:10px}
+label input,label select,label textarea{display:block;width:100%;margin-top:4px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-weight:400}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.vend{display:flex;flex-wrap:wrap;gap:8px}
+.vend span{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px}
+.vend b{font-variant-numeric:tabular-nums}
+.prog{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:4px;min-width:90px}.prog i{display:block;height:100%;background:var(--paid)}.hist{margin:0 0 12px;padding:0;list-style:none;font-size:13px;max-height:150px;overflow:auto}.hist li{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line)}.hist button{border:0;background:none;color:var(--over);cursor:pointer;font-size:12px}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1>Payables Desk</h1><div class="sub" id="today"></div></div>
+  <div style="display:flex;gap:8px"><button class="btn" id="theme">Theme</button><button class="btn pri" id="add">Add bill</button></div>
+</header>
+
+<section class="stats" id="stats"></section>
+
+<section class="panel">
+  <h2>Aging of unpaid bills</h2>
+  <div class="aging" id="aging"></div>
+  <div class="legend" id="legend"></div>
+</section>
+
+<section class="panel">
+  <div class="tools">
+    <input id="q" type="search" placeholder="Search vendor or invoice number" aria-label="Search bills">
+    <select id="fs" aria-label="Filter by status">
+      <option value="unpaid">Unpaid</option><option value="all">All bills</option><option value="overdue">Overdue</option><option value="due">Due in 7 days</option><option value="partial">Partly paid</option><option value="paid">Paid</option>
+    </select>
+    <button class="btn" id="csv">Copy CSV</button>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>Vendor</th><th>Invoice</th><th>Category</th><th>Due</th><th class="num">Balance</th><th>Status</th><th></th></tr></thead>
+    <tbody id="body"></tbody>
+  </table></div>
+  <div class="empty" id="empty" hidden>No bills match. Add a bill or change the filter.</div>
+</section>
+
+<section class="panel"><h2>Owed by vendor</h2><div class="vend" id="vend"></div></section>
+</div>
+
+<dialog id="dlg">
+  <h2 id="dt">Add bill</h2>
+  <label>Vendor<input id="f-vendor" required list="vl" autocomplete="off"></label>
+  <datalist id="vl"></datalist>
+  <div class="row">
+    <label>Invoice number<input id="f-inv"></label>
+    <label>Amount (PHP, ₱)<input id="f-amt" type="number" min="0" step="0.01"></label>
+  </div>
+  <div class="row">
+    <label>Invoice date<input id="f-date" type="date"></label>
+    <label>Due date<input id="f-due" type="date"></label>
+  </div>
+  <label>Category<select id="f-cat"><option>Supplies</option><option>Software</option><option>Rent and utilities</option><option>Services</option><option>Travel</option><option>Other</option></select></label>
+  <label>Notes<textarea id="f-note" rows="2"></textarea></label>
+  <div class="sub" id="err" style="color:var(--over)"></div>
+  <div class="foot"><button class="btn" id="cancel">Cancel</button><button class="btn pri" id="save">Save bill</button></div>
+</dialog>
+
+<dialog id="pdlg">
+  <h2 id="pt">Payments</h2>
+  <div class="sub" id="pinfo" style="margin-bottom:8px"></div>
+  <ul class="hist" id="phist"></ul>
+  <div class="row">
+    <label>Payment amount (PHP)<input id="p-amt" type="number" min="0" step="0.01"></label>
+    <label>Payment date<input id="p-date" type="date"></label>
+  </div>
+  <label>Reference<input id="p-ref" placeholder="Bank transfer, check number"></label>
+  <div class="sub" id="perr" style="color:var(--over)"></div>
+  <div class="foot"><button class="btn" id="pclose">Close</button><button class="btn" id="pfull">Pay full balance</button><button class="btn pri" id="psave">Record payment</button></div>
+</dialog>
+<script>
+(function(){
+var KEY="payables-desk-v1",bills=[],editId=null;
+var $=function(i){return document.getElementById(i)};
+function iso(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(x<10?"0":"")+x}
+function off(n){var d=new Date();d.setDate(d.getDate()+n);return iso(d)}
+var TODAY=off(0);
+function days(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/864e5)}
+function money(n){return "₱"+n.toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function load(){try{var r=localStorage.getItem(KEY);if(r){bills=JSON.parse(r);return}}catch(e){}
+  bills=[
+   {id:1,vendor:"Northline Office Supply",inv:"NL-2291",amt:482.5,date:off(-40),due:off(-10),cat:"Supplies",note:"",paid:null},
+   {id:2,vendor:"Harbor Cloud Hosting",inv:"HC-77310",amt:1260,date:off(-12),due:off(3),cat:"Software",note:"Annual plan",paid:null},
+   {id:3,vendor:"Alder Street Properties",inv:"RENT-NOV",amt:3400,date:off(-2),due:off(14),cat:"Rent and utilities",note:"",paid:null},
+   {id:4,vendor:"Calloway Legal",inv:"CL-1042",amt:2150,date:off(-75),due:off(-45),cat:"Services",note:"Contract review",paid:null,payments:[{id:41,amt:1000,date:off(-30),ref:"Bank transfer"}]},
+   {id:5,vendor:"Northline Office Supply",inv:"NL-2188",amt:219.9,date:off(-30),due:off(-1),cat:"Supplies",note:"",paid:null},
+   {id:6,vendor:"Brightwave Telecom",inv:"BW-5521",amt:164.2,date:off(-25),due:off(-5),cat:"Rent and utilities",note:"",paid:off(-6)},
+   {id:7,vendor:"Harbor Cloud Hosting",inv:"HC-77102",amt:1260,date:off(-45),due:off(-20),cat:"Software",note:"",paid:off(-21)}
+  ]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(bills))}catch(e){}}
+function status(b){if(isPaid(b))return"paid";var d=days(TODAY,b.due);return d<0?"overdue":d<=7?"due":"open"}
+var LBL={paid:"Paid",overdue:"Overdue",due:"Due soon",open:"Open"},CLS={paid:"s-paid",overdue:"s-over",due:"s-due",open:"s-open"};
+function fmtDate(s){return new Date(s+"T00:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}
+function pays(b){return b.payments||[]}
+function paidAmt(b){return Math.round(pays(b).reduce(function(a,p){return a+p.amt},0)*100)/100}
+function bal(b){return Math.max(0,Math.round((b.amt-paidAmt(b))*100)/100)}
+function isPaid(b){return bal(b)<=0}
+function sum(l){return l.reduce(function(a,b){return a+bal(b)},0)}
+function migrate(){bills.forEach(function(b){if(!b.payments)b.payments=b.paid?[{id:b.id+1,amt:b.amt,date:b.paid,ref:""}]:[]})}
+
+function render(){
+  var un=bills.filter(function(b){return!isPaid(b)}),ov=un.filter(function(b){return status(b)==="overdue"}),du=un.filter(function(b){return status(b)==="due"});
+  var mo=TODAY.slice(0,7),pd=[];bills.forEach(function(b){pays(b).forEach(function(p){if(p.date.slice(0,7)===mo)pd.push(p)})});
+  $("today").textContent="Today is "+fmtDate(TODAY)+". Data stays in this browser.";
+  $("stats").innerHTML=
+   '<div class="stat"><b>'+money(sum(un))+'</b><span>Total outstanding ('+un.length+' bills)</span></div>'+
+   '<div class="stat over"><b>'+money(sum(ov))+'</b><span>Overdue ('+ov.length+')</span></div>'+
+   '<div class="stat due"><b>'+money(sum(du))+'</b><span>Due in 7 days ('+du.length+')</span></div>'+
+   '<div class="stat paid"><b>'+money(pd.reduce(function(a,p){return a+p.amt},0))+'</b><span>Payments made this month ('+pd.length+')</span></div>';
+  var bk=[["Current",0,"var(--accent)"],["1–30 days late",0,"var(--due)"],["31–60 days late",0,"#d9731f"],["60+ days late",0,"var(--over)"]];
+  un.forEach(function(b){var l=-days(TODAY,b.due);var i=l<=0?0:l<=30?1:l<=60?2:3;bk[i][1]+=bal(b)});
+  var tot=bk.reduce(function(a,x){return a+x[1]},0);
+  $("aging").innerHTML=tot?bk.map(function(x){return'<i style="width:'+(x[1]/tot*100)+'%;background:'+x[2]+'"></i>'}).join(""):"";
+  $("legend").innerHTML=bk.map(function(x){return'<span><em style="background:'+x[2]+'"></em>'+x[0]+": "+money(x[1])+"</span>"}).join("");
+
+  var q=$("q").value.trim().toLowerCase(),f=$("fs").value;
+  var list=bills.filter(function(b){
+    var s=status(b);
+    if(f==="unpaid"&&isPaid(b))return false;if(f==="paid"&&!isPaid(b))return false;if(f==="partial"&&!(paidAmt(b)>0&&!isPaid(b)))return false;
+    if(f==="overdue"&&s!=="overdue")return false;if(f==="due"&&s!=="due")return false;
+    return!q||(b.vendor+" "+b.inv).toLowerCase().indexOf(q)>-1
+  }).sort(function(a,b){return a.due<b.due?-1:1});
+  $("body").innerHTML=list.map(function(b){var s=status(b),d=days(TODAY,b.due);
+    var pa=paidAmt(b),last=pays(b).length?pays(b)[pays(b).length-1].date:TODAY;var rel=isPaid(b)?"Paid "+fmtDate(last):d<0?Math.abs(d)+" days late":d===0?"Due today":"in "+d+" days";
+    return"<tr><td><b>"+esc(b.vendor)+"</b>"+(b.note?'<div class="sub">'+esc(b.note)+"</div>":"")+"</td><td>"+esc(b.inv)+"</td><td>"+esc(b.cat)+"</td><td>"+fmtDate(b.due)+'<div class="sub">'+rel+'</div></td><td class="num">'+money(bal(b))+(isPaid(b)?'<div class="sub">Paid in full ('+money(b.amt)+')</div>':pa>0?'<div class="sub">Paid '+money(pa)+' of '+money(b.amt)+'</div><div class="prog"><i style="width:'+Math.min(100,pa/b.amt*100)+'%"></i></div>':'')+'</td><td><span class="pill '+CLS[s]+'">'+LBL[s]+'</span></td><td><div class="acts">'+
+    '<button class="btn sm pri" data-a="pay" data-id="'+b.id+'">'+(isPaid(b)?'Payments':'Record payment')+'</button>'+
+    '<button class="btn sm" data-a="edit" data-id="'+b.id+'">Edit</button><button class="btn sm danger" data-a="del" data-id="'+b.id+'">Delete</button></div></td></tr>'}).join("");
+  $("empty").hidden=list.length>0;
+  var v={};un.forEach(function(b){v[b.vendor]=(v[b.vendor]||0)+bal(b)});
+  var ks=Object.keys(v).sort(function(a,b){return v[b]-v[a]});
+  $("vend").innerHTML=ks.length?ks.map(function(k){return"<span>"+esc(k)+" <b>"+money(v[k])+"</b></span>"}).join(""):'<span class="sub">Nothing owed.</span>';
+  var all={};bills.forEach(function(b){all[b.vendor]=1});
+  $("vl").innerHTML=Object.keys(all).map(function(k){return'<option value="'+esc(k)+'">'}).join("");
+}
+
+function openForm(id){
+  editId=id;var b=bills.filter(function(x){return x.id===id})[0]||{vendor:"",inv:"",amt:"",date:TODAY,due:off(30),cat:"Supplies",note:""};
+  $("dt").textContent=id?"Edit bill":"Add bill";$("err").textContent="";
+  $("f-vendor").value=b.vendor;$("f-inv").value=b.inv;$("f-amt").value=b.amt;$("f-date").value=b.date;$("f-due").value=b.due;$("f-cat").value=b.cat;$("f-note").value=b.note||"";
+  $("dlg").showModal();
+}
+$("add").onclick=function(){openForm(null)};
+$("cancel").onclick=function(){$("dlg").close()};
+$("save").onclick=function(){
+  var v=$("f-vendor").value.trim(),a=parseFloat($("f-amt").value),d=$("f-due").value;
+  if(!v){$("err").textContent="Enter a vendor name.";return}
+  if(!(a>0)){$("err").textContent="Enter an amount greater than zero.";return}
+  if(!d){$("err").textContent="Choose a due date.";return}
+  var rec={vendor:v,inv:$("f-inv").value.trim()||"—",amt:a,date:$("f-date").value||TODAY,due:d,cat:$("f-cat").value,note:$("f-note").value.trim()};
+  if(editId){bills.forEach(function(b){if(b.id===editId)Object.assign(b,rec)})}
+  else{rec.id=Date.now();rec.paid=null;rec.payments=[];bills.push(rec)}
+  save();$("dlg").close();render();
+};
+$("body").onclick=function(e){
+  var t=e.target.closest("button");if(!t)return;var id=+t.dataset.id,a=t.dataset.a;
+  if(a==="edit")return openForm(id);
+  if(a==="del"){if(!confirm("Delete this bill? This can’t be undone."))return;bills=bills.filter(function(b){return b.id!==id})}
+  if(a==="pay")return openPay(id);
+  
+  save();render();
+};
+$("q").oninput=render;$("fs").onchange=render;
+$("csv").onclick=function(){
+  var rows=[["Vendor","Invoice","Category","Invoice date","Due date","Amount","Paid so far","Balance","Status"]].concat(bills.map(function(b){return[b.vendor,b.inv,b.cat,b.date,b.due,b.amt.toFixed(2),paidAmt(b).toFixed(2),bal(b).toFixed(2),LBL[status(b)]]}));
+  var t=rows.map(function(r){return r.map(function(c){return'"'+String(c).replace(/"/g,'""')+'"'}).join(",")}).join("\n");
+  var ok=function(){$("csv").textContent="Copied";setTimeout(function(){$("csv").textContent="Copy CSV"},1500)};
+  try{navigator.clipboard.writeText(t).then(ok,function(){})}catch(e){}
+};
+$("theme").onclick=function(){
+  var r=document.documentElement,dark=r.getAttribute("data-theme")?r.getAttribute("data-theme")==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  r.setAttribute("data-theme",dark?"light":"dark");
+};
+var payId=null;
+function curBill(){return bills.filter(function(x){return x.id===payId})[0]}
+function openPay(id){payId=id;$("perr").textContent="";$("p-amt").value="";$("p-date").value=TODAY;$("p-ref").value="";drawPay();$("pdlg").showModal()}
+function drawPay(){var b=curBill();if(!b)return;
+  $("pt").textContent="Payments for "+b.vendor+", "+b.inv;
+  $("pinfo").textContent="Invoice total "+money(b.amt)+". Paid "+money(paidAmt(b))+". Balance "+money(bal(b))+".";
+  var h=pays(b).map(function(p,i){return'<li><span>'+fmtDate(p.date)+(p.ref?", "+esc(p.ref):"")+'</span><span>'+money(p.amt)+' <button data-i="'+i+'">Remove</button></span></li>'}).join("");
+  $("phist").innerHTML=h||'<li class="sub">No payments yet.</li>';
+  $("psave").disabled=$("pfull").disabled=isPaid(b)}
+function addPay(amt){var b=curBill();
+  if(!(amt>0)){$("perr").textContent="Enter a payment amount greater than zero.";return}
+  if(amt>bal(b)+0.004){$("perr").textContent="Payment is more than the balance of "+money(bal(b))+".";return}
+  var d=$("p-date").value||TODAY;
+  b.payments.push({id:Date.now(),amt:Math.round(amt*100)/100,date:d,ref:$("p-ref").value.trim()});
+  b.payments.sort(function(x,y){return x.date<y.date?-1:x.date>y.date?1:0});
+  b.paid=isPaid(b)?d:null;save();render();$("p-amt").value="";$("p-ref").value="";$("perr").textContent="";drawPay()}
+$("psave").onclick=function(){addPay(parseFloat($("p-amt").value))};
+$("pfull").onclick=function(){addPay(bal(curBill()))};
+$("pclose").onclick=function(){$("pdlg").close()};
+$("phist").onclick=function(e){var t=e.target.closest("button");if(!t)return;var b=curBill();b.payments.splice(+t.dataset.i,1);b.paid=isPaid(b)&&b.payments.length?b.payments[b.payments.length-1].date:null;save();render();drawPay()};
+load();migrate();render();
+})();
+</script>
+</body>
+</html>
